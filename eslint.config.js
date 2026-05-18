@@ -8,7 +8,14 @@ import tsPlugin from "@typescript-eslint/eslint-plugin"
 
 export default [
   {
-    ignores: ["dist/", "node_modules/", "storybook-static/"],
+    ignores: [
+      "dist/",
+      "node_modules/",
+      "storybook-static/",
+      "test-results/",
+      "playwright-report/",
+      "blob-report/",
+    ],
   },
   js.configs.recommended,
   ...tsPlugin.configs["flat/recommended"],

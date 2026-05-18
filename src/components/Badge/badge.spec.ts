@@ -2,19 +2,16 @@ import { expect, test } from "@playwright/test"
 
 test.describe("Expect default badge", () => {
   test("to be rendered", async ({ page }) => {
-    await page.goto("http://localhost:6006/?path=/story/ui-badge--default")
+    await page.goto("http://127.0.0.1:6006/iframe.html?id=ui-badge--default&viewMode=story")
     await page
-      .frameLocator('iframe[title="storybook-preview-iframe"]')
       .getByText("Badge")
       .click()
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByText("Badge"),
     ).toBeVisible()
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .locator("#storybook-root"),
     ).toContainText("Badge")
   })
@@ -22,31 +19,26 @@ test.describe("Expect default badge", () => {
 
 test.describe("Expect accordion variants", () => {
   test("to inlcude all variants", async ({ page }) => {
-    await page.goto("http://localhost:6006/?path=/story/ui-badge--variants")
+    await page.goto("http://127.0.0.1:6006/iframe.html?id=ui-badge--variants&viewMode=story")
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByText("Neutral"),
     ).toBeVisible()
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .locator("#storybook-root")
         .getByText("Default"),
     ).toBeVisible()
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByText("Success"),
     ).toBeVisible()
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByText("Error"),
     ).toBeVisible()
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByText("Warning"),
     ).toBeVisible()
   })
@@ -55,11 +47,10 @@ test.describe("Expect accordion variants", () => {
 test.describe("Expect badge as link", () => {
   test("to be a link", async ({ page }) => {
     await page.goto(
-      "http://localhost:6006/?path=/story/ui-badge--anchor-with-badge-variants-style",
+      "http://127.0.0.1:6006/iframe.html?id=ui-badge--anchor-with-badge-variants-style&viewMode=story",
     )
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByRole("link"),
     ).toBeDefined()
   })

@@ -2,18 +2,16 @@ import { expect, test } from "@playwright/test"
 
 test.describe("Slider component", () => {
   test("renders the slider", async ({ page }) => {
-    await page.goto("http://localhost:6006/?path=/story/ui-slider--default")
+    await page.goto("http://127.0.0.1:6006/iframe.html?id=ui-slider--default&viewMode=story")
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByRole("slider"),
     ).toBeVisible()
   })
 
   test("can be dragged horizontally", async ({ page }) => {
-    await page.goto("http://localhost:6006/?path=/story/ui-slider--default")
+    await page.goto("http://127.0.0.1:6006/iframe.html?id=ui-slider--default&viewMode=story")
     const slider = page
-      .frameLocator('iframe[title="storybook-preview-iframe"]')
       .getByRole("slider")
     await expect(slider).toBeVisible()
     const boundingBox = await slider.boundingBox()
@@ -32,9 +30,8 @@ test.describe("Slider component", () => {
   })
 
   test("can be dragged vertically", async ({ page }) => {
-    await page.goto("http://localhost:6006/?path=/story/ui-slider--vertical")
+    await page.goto("http://127.0.0.1:6006/iframe.html?id=ui-slider--vertical&viewMode=story")
     const slider = page
-      .frameLocator('iframe[title="storybook-preview-iframe"]')
       .getByRole("slider")
     await expect(slider).toBeVisible()
     const boundingBox = await slider.boundingBox()
@@ -53,9 +50,8 @@ test.describe("Slider component", () => {
   })
 
   test("displays the correct value when changed", async ({ page }) => {
-    await page.goto("http://localhost:6006/?path=/story/ui-slider--default")
+    await page.goto("http://127.0.0.1:6006/iframe.html?id=ui-slider--default&viewMode=story")
     const slider = page
-      .frameLocator('iframe[title="storybook-preview-iframe"]')
       .getByRole("slider")
     await expect(slider).toBeVisible()
     const boundingBox = await slider.boundingBox()
@@ -75,9 +71,8 @@ test.describe("Slider component", () => {
   })
 
   test("to be disabled", async ({ page }) => {
-    await page.goto("http://localhost:6006/?path=/story/ui-slider--disabled")
+    await page.goto("http://127.0.0.1:6006/iframe.html?id=ui-slider--disabled&viewMode=story")
     const slider = page
-      .frameLocator('iframe[title="storybook-preview-iframe"]')
       .getByRole("slider")
     const isDataDisabled = await slider.getAttribute("data-disabled")
     expect(isDataDisabled).not.toBeNull()

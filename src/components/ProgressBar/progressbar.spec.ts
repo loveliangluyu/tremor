@@ -3,27 +3,24 @@ import { expect, test } from "@playwright/test"
 test.describe("Expect progressbar default", () => {
   test("to be rendered", async ({ page }) => {
     await page.goto(
-      "http://localhost:6006/?path=/story/visualization-progressbar--default",
+      "http://127.0.0.1:6006/iframe.html?id=visualization-progressbar--default&viewMode=story",
     )
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByTestId("progressbar"),
     ).toBeVisible()
   })
 
   test("to have a background bar", async ({ page }) => {
     await page.goto(
-      "http://localhost:6006/?path=/story/visualization-progressbar--default",
+      "http://127.0.0.1:6006/iframe.html?id=visualization-progressbar--default&viewMode=story",
     )
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByTestId("progressbar"),
     ).toBeVisible()
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByLabel("Progress bar"),
     ).toBeVisible()
   })
@@ -32,12 +29,10 @@ test.describe("Expect progressbar default", () => {
     page,
   }) => {
     await page.goto(
-      "http://localhost:6006/?path=/story/visualization-progressbar--default",
+      "http://127.0.0.1:6006/iframe.html?id=visualization-progressbar--default&viewMode=story",
     )
 
-    const storyFrame = page.frameLocator(
-      'iframe[title="storybook-preview-iframe"]',
-    )
+    const storyFrame = page
 
     const progressBar = storyFrame.getByRole("progressbar", {
       name: "Progress bar",
@@ -56,12 +51,10 @@ test.describe("Expect progressbar default", () => {
 
   test("updates progress value through controls", async ({ page }) => {
     await page.goto(
-      "http://localhost:6006/?path=/story/visualization-progressbar--default",
+      "http://127.0.0.1:6006/iframe.html?id=visualization-progressbar--default&viewMode=story",
     )
 
-    const storyFrame = page.frameLocator(
-      'iframe[title="storybook-preview-iframe"]',
-    )
+    const storyFrame = page
     const progressBar = storyFrame.getByRole("progressbar", {
       name: "Progress bar",
     })
@@ -70,31 +63,27 @@ test.describe("Expect progressbar default", () => {
 
   test("displays label correctly", async ({ page }) => {
     await page.goto(
-      "http://localhost:6006/?path=/story/visualization-progressbar--default",
+      "http://127.0.0.1:6006/iframe.html?id=visualization-progressbar--default&viewMode=story",
     )
 
-    const storyFrame = page.frameLocator(
-      'iframe[title="storybook-preview-iframe"]',
-    )
+    const storyFrame = page
 
     await expect(storyFrame.getByText("62%")).toBeVisible()
   })
 
   test("to have a label", async ({ page }) => {
     await page.goto(
-      "http://localhost:6006/?path=/story/visualization-progressbar--default",
+      "http://127.0.0.1:6006/iframe.html?id=visualization-progressbar--default&viewMode=story",
     )
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByTestId("progressbar"),
     ).toBeVisible()
     await page.goto(
-      "http://localhost:6006/?path=/story/visualization-progressbar--default",
+      "http://127.0.0.1:6006/iframe.html?id=visualization-progressbar--default&viewMode=story",
     )
     await expect(
       page
-        .frameLocator('iframe[title="storybook-preview-iframe"]')
         .getByText("%"),
     ).toBeVisible()
   })

@@ -2,11 +2,11 @@ import { expect, test } from "@playwright/test"
 
 test.describe("Dialog Component", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:6006/?path=/story/ui-dialog--default")
+    await page.goto("http://127.0.0.1:6006/iframe.html?id=ui-dialog--default&viewMode=story")
   })
 
   test("should open and display dialog content", async ({ page }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Dialog" }).click()
 
@@ -27,7 +27,7 @@ test.describe("Dialog Component", () => {
   test("should close the dialog when 'Go back' button is clicked", async ({
     page,
   }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Dialog" }).click()
 
@@ -41,7 +41,7 @@ test.describe("Dialog Component", () => {
   test("should close the dialog when 'Ok, got it!' button is clicked", async ({
     page,
   }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Dialog" }).click()
 
@@ -53,7 +53,7 @@ test.describe("Dialog Component", () => {
   })
 
   test("should be accessible via keyboard interactions", async ({ page }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Dialog" }).focus()
     await page.keyboard.press("Enter")
@@ -70,7 +70,7 @@ test.describe("Dialog Component", () => {
   })
 
   test("should support custom class names and styles", async ({ page }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Dialog" }).click()
 
@@ -79,7 +79,7 @@ test.describe("Dialog Component", () => {
   })
 
   test("should handle content updates correctly", async ({ page }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Dialog" }).click()
 

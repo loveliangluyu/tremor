@@ -2,11 +2,11 @@ import { expect, test } from "@playwright/test"
 
 test.describe("Drawer Component", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:6006/?path=/story/ui-drawer--default")
+    await page.goto("http://127.0.0.1:6006/iframe.html?id=ui-drawer--default&viewMode=story")
   })
 
   test("should open and display drawer content", async ({ page }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Drawer" }).click()
 
@@ -30,7 +30,7 @@ test.describe("Drawer Component", () => {
   test("should close the drawer when 'Go back' button is clicked", async ({
     page,
   }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Drawer" }).click()
 
@@ -44,7 +44,7 @@ test.describe("Drawer Component", () => {
   test("should close the drawer when 'Ok, got it!' button is clicked", async ({
     page,
   }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Drawer" }).click()
 
@@ -56,7 +56,7 @@ test.describe("Drawer Component", () => {
   })
 
   test("should be accessible via keyboard interactions", async ({ page }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Drawer" }).focus()
     await page.keyboard.press("Enter")
@@ -73,7 +73,7 @@ test.describe("Drawer Component", () => {
   })
 
   test("should handle content updates correctly", async ({ page }) => {
-    const frame = page.frameLocator('iframe[title="storybook-preview-iframe"]')
+    const frame = page
 
     await frame.getByRole("button", { name: "Open Drawer" }).click()
 
