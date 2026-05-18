@@ -950,31 +950,36 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                       payload: item.payload,
                     }))
                   : []
+                const tooltipLabel = label == null ? "" : String(label)
 
                 if (
                   tooltipCallback &&
                   (active !== prevActiveRef.current ||
-                    label !== prevLabelRef.current)
+                    tooltipLabel !== prevLabelRef.current)
                 ) {
-                  tooltipCallback({ active, payload: cleanPayload, label })
+                  tooltipCallback({
+                    active,
+                    payload: cleanPayload,
+                    label: tooltipLabel,
+                  })
                   prevActiveRef.current = active
-                  prevLabelRef.current = label
+                  prevLabelRef.current = tooltipLabel
                 }
 
                 return showTooltip && active ? (
                   CustomTooltip ? (
                     <CustomTooltip
-                      active={active}
-                      payload={cleanPayload}
-                      label={label}
-                    />
-                  ) : (
-                    <ChartTooltip
-                      active={active}
-                      payload={cleanPayload}
-                      label={label}
-                      barValueFormatter={mergedBarSeries.valueFormatter}
-                      lineValueFormatter={mergedLineSeries.valueFormatter}
+	                      active={active}
+	                      payload={cleanPayload}
+	                      label={tooltipLabel}
+	                    />
+	                  ) : (
+	                    <ChartTooltip
+	                      active={active}
+	                      payload={cleanPayload}
+	                      label={tooltipLabel}
+	                      barValueFormatter={mergedBarSeries.valueFormatter}
+	                      lineValueFormatter={mergedLineSeries.valueFormatter}
                     />
                   )
                 ) : null

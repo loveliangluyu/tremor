@@ -20,6 +20,13 @@ import {
 } from "../../utils/chartColors"
 import { cx } from "../../utils/cx"
 
+const PieWithActiveIndex = Pie as React.ComponentType<
+  React.ComponentProps<typeof Pie> & {
+    activeIndex?: number
+    inactiveShape?: (props: any) => React.ReactElement<SVGElement>
+  }
+>
+
 const sumNumericArray = (arr: number[]): number =>
   arr.reduce((sum, num) => sum + num, 0)
 
@@ -253,7 +260,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>(
                 {parsedLabelInput}
               </text>
             )}
-            <Pie
+            <PieWithActiveIndex
               className={cx(
                 "stroke-white dark:stroke-gray-950 [&_.recharts-pie-sector]:outline-hidden",
                 onValueChange ? "cursor-pointer" : "cursor-default",

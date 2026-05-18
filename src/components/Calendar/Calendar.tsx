@@ -9,16 +9,20 @@ import {
   RiArrowRightDoubleLine,
   RiArrowRightSLine,
 } from "@remixicon/react"
-import { addYears, format, isSameMonth } from "date-fns"
+import { addYears, format, type Locale } from "date-fns"
 import {
+  DayFlag,
   DayPicker,
+  SelectionState,
+  UI,
   useDayPicker,
-  useDayRender,
-  useNavigation,
-  type DayPickerRangeProps,
-  type DayPickerSingleProps,
-  type DayProps,
+  type ChevronProps,
+  type DayButtonProps,
+  type DayPickerProps,
+  type DateRange,
   type Matcher,
+  type MonthCaptionProps,
+  type OnSelectHandler,
 } from "react-day-picker"
 
 import { cx } from "../../utils/cx"
@@ -72,25 +76,25 @@ const NavigationButton = React.forwardRef<
 
 NavigationButton.displayName = "NavigationButton"
 
-type OmitKeys<T, K extends keyof T> = {
-  [P in keyof T as P extends K ? never : P]: T[P]
+type KeysToOmit =
+  | "showWeekNumber"
+  | "captionLayout"
+  | "mode"
+  | "selected"
+  | "onSelect"
+
+type LegacyNavigationProps = {
+  fromDate?: Date
+  toDate?: Date
 }
 
-type KeysToOmit = "showWeekNumber" | "captionLayout" | "mode"
-
-type SingleProps = OmitKeys<DayPickerSingleProps, KeysToOmit>
-type RangeProps = OmitKeys<DayPickerRangeProps, KeysToOmit>
-
-type CalendarProps =
-  | ({
-      mode: "single"
-    } & SingleProps)
-  | ({
-      mode?: undefined
-    } & SingleProps)
-  | ({
-      mode: "range"
-    } & RangeProps)
+type CalendarProps = Omit<DayPickerProps, KeysToOmit> &
+  LegacyNavigationProps & {
+    mode?: "single" | "range"
+    initialFocus?: boolean
+    selected?: Date | DateRange
+    onSelect?: OnSelectHandler<Date | undefined> | OnSelectHandler<DateRange | undefined>
+  }
 
 const Calendar = ({
   mode = "single",
@@ -98,78 +102,84 @@ const Calendar = ({
   numberOfMonths = 1,
   enableYearNavigation = false,
   disableNavigation,
+  fromDate,
+  toDate,
+  initialFocus,
   locale,
   className,
   classNames,
   ...props
 }: CalendarProps & { enableYearNavigation?: boolean }) => {
+  const startMonth = props.startMonth ?? fromDate
+  const endMonth = props.endMonth ?? toDate
+
   return (
     <DayPicker
       mode={mode}
       weekStartsOn={weekStartsOn}
       numberOfMonths={numberOfMonths}
+      startMonth={startMonth}
+      endMonth={endMonth}
       locale={locale}
       showOutsideDays={numberOfMonths === 1}
       className={cx(className)}
       classNames={{
-        months: "flex space-y-0",
-        month: "space-y-4 p-3",
-        nav: "gap-1 flex items-center rounded-full size-full justify-between p-4",
-        table: "w-full border-collapse space-y-1",
-        head_cell:
+        [UI.Months]: "flex space-y-0",
+        [UI.Month]: "space-y-4 p-3",
+        [UI.Nav]: "hidden",
+        [UI.MonthGrid]: "w-full border-collapse space-y-1",
+        [UI.Weekday]:
           "w-9 font-medium text-sm sm:text-xs text-center text-gray-400 dark:text-gray-600 pb-2",
-        row: "w-full mt-0.5",
-        cell: cx(
+        [UI.Week]: "w-full mt-0.5",
+        [UI.Day]: cx(
           "relative p-0 text-center focus-within:relative",
           "text-gray-900 dark:text-gray-50",
         ),
-        day: cx(
+        [UI.DayButton]: cx(
           "size-9 rounded-sm text-sm focus:z-10",
           "text-gray-900 dark:text-gray-50",
           "hover:bg-gray-200 dark:hover:bg-gray-700",
           focusRing,
         ),
-        day_today: "font-semibold",
-        day_selected: cx(
+        [DayFlag.today]: "font-semibold",
+        [SelectionState.selected]: cx(
           "rounded-sm",
           "aria-selected:bg-blue-500 aria-selected:text-white",
           "dark:aria-selected:bg-blue-500 dark:aria-selected:text-white",
         ),
-        day_disabled:
+        [DayFlag.disabled]:
           "text-gray-300! dark:text-gray-700! line-through disabled:hover:bg-transparent",
-        day_outside: "text-gray-400 dark:text-gray-600",
-        day_range_middle: cx(
+        [DayFlag.outside]: "text-gray-400 dark:text-gray-600",
+        [SelectionState.range_middle]: cx(
           "rounded-none!",
           "aria-selected:bg-gray-100! aria-selected:text-gray-900!",
           "dark:aria-selected:bg-gray-900! dark:aria-selected:text-gray-50!",
         ),
-        day_range_start: "rounded-r-none rounded-l!",
-        day_range_end: "rounded-l-none rounded-r!",
-        day_hidden: "invisible",
+        [SelectionState.range_start]: "rounded-r-none rounded-l!",
+        [SelectionState.range_end]: "rounded-l-none rounded-r!",
+        [DayFlag.hidden]: "invisible",
         ...classNames,
       }}
       components={{
-        IconLeft: () => (
-          <RiArrowLeftSLine aria-hidden="true" className="size-4" />
-        ),
-        IconRight: () => (
-          <RiArrowRightSLine aria-hidden="true" className="size-4" />
-        ),
-        Caption: ({ ...props }) => {
+        Chevron: ({ orientation }: ChevronProps) =>
+          orientation === "left" ? (
+            <RiArrowLeftSLine aria-hidden="true" className="size-4" />
+          ) : (
+            <RiArrowRightSLine aria-hidden="true" className="size-4" />
+          ),
+        MonthCaption: ({ calendarMonth, displayIndex }: MonthCaptionProps) => {
           const {
             goToMonth,
             nextMonth,
             previousMonth,
-            currentMonth,
-            displayMonths,
-          } = useNavigation()
-          const { numberOfMonths, fromDate, toDate } = useDayPicker()
-
-          const displayIndex = displayMonths.findIndex((month) =>
-            isSameMonth(props.displayMonth, month),
-          )
+            months,
+            dayPickerProps,
+          } = useDayPicker()
+          const currentMonth = months[0]?.date ?? calendarMonth.date
+          const startMonth = dayPickerProps.startMonth
+          const endMonth = dayPickerProps.endMonth
           const isFirst = displayIndex === 0
-          const isLast = displayIndex === displayMonths.length - 1
+          const isLast = displayIndex === months.length - 1
 
           const hideNextButton = numberOfMonths > 1 && (isFirst || !isLast)
           const hidePreviousButton = numberOfMonths > 1 && (isLast || !isFirst)
@@ -178,7 +188,7 @@ const Calendar = ({
             const targetMonth = addYears(currentMonth, -1)
             if (
               previousMonth &&
-              (!fromDate || targetMonth.getTime() >= fromDate.getTime())
+              (!startMonth || targetMonth.getTime() >= startMonth.getTime())
             ) {
               goToMonth(targetMonth)
             }
@@ -188,7 +198,7 @@ const Calendar = ({
             const targetMonth = addYears(currentMonth, 1)
             if (
               nextMonth &&
-              (!toDate || targetMonth.getTime() <= toDate.getTime())
+              (!endMonth || targetMonth.getTime() <= endMonth.getTime())
             ) {
               goToMonth(targetMonth)
             }
@@ -202,9 +212,9 @@ const Calendar = ({
                     disabled={
                       disableNavigation ||
                       !previousMonth ||
-                      (fromDate &&
+                      (startMonth &&
                         addYears(currentMonth, -1).getTime() <
-                          fromDate.getTime())
+                          startMonth.getTime())
                     }
                     aria-label="Go to previous year"
                     onClick={goToPreviousYear}
@@ -226,7 +236,9 @@ const Calendar = ({
                 aria-live="polite"
                 className="text-sm font-medium capitalize tabular-nums text-gray-900 dark:text-gray-50"
               >
-                {format(props.displayMonth, "LLLL yyy", { locale })}
+                {format(calendarMonth.date, "LLLL yyy", {
+                  locale: locale as Locale | undefined,
+                })}
               </div>
 
               <div className="flex items-center gap-1">
@@ -243,8 +255,9 @@ const Calendar = ({
                     disabled={
                       disableNavigation ||
                       !nextMonth ||
-                      (toDate &&
-                        addYears(currentMonth, 1).getTime() > toDate.getTime())
+                      (endMonth &&
+                        addYears(currentMonth, 1).getTime() >
+                          endMonth.getTime())
                     }
                     aria-label="Go to next year"
                     onClick={goToNextYear}
@@ -255,29 +268,8 @@ const Calendar = ({
             </div>
           )
         },
-        Day: ({ date, displayMonth }: DayProps) => {
-          const buttonRef = React.useRef<HTMLButtonElement>(null)
-          const { activeModifiers, buttonProps, divProps, isButton, isHidden } =
-            useDayRender(date, displayMonth, buttonRef)
-
-          const { selected, today, disabled, range_middle } = activeModifiers
-
-          if (isHidden) {
-            return <></>
-          }
-
-          if (!isButton) {
-            return (
-              <div
-                {...divProps}
-                className={cx(
-                  "flex items-center justify-center",
-                  divProps.className,
-                )}
-              />
-            )
-          }
-
+        DayButton: ({ modifiers, ...buttonProps }: DayButtonProps) => {
+          const { selected, today, disabled, range_middle } = modifiers
           const {
             children: buttonChildren,
             className: buttonClassName,
@@ -286,7 +278,6 @@ const Calendar = ({
 
           return (
             <button
-              ref={buttonRef}
               {...buttonPropsRest}
               type="button"
               className={cx("relative", buttonClassName)}
@@ -312,7 +303,8 @@ const Calendar = ({
         },
       }}
       tremor-id="tremor-raw"
-      {...(props as SingleProps & RangeProps)}
+      {...(props as DayPickerProps)}
+      autoFocus={props.autoFocus ?? initialFocus}
     />
   )
 }
