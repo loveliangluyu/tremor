@@ -47,19 +47,32 @@ test.describe("Expect accordion multiple to", () => {
     await page.goto(
       "http://127.0.0.1:6006/iframe.html?id=ui-accordion--type-multiple&viewMode=story",
     )
-    await expect(
-      page
-        .getByRole("button", { name: "Does NASA provide public" }),
-    ).toBeVisible()
-    await page
-      .getByRole("button", { name: "Does NASA provide public" })
-      .click({ force: true })
-    await page
-      .getByRole("button", { name: "Are NASA's educational" })
-      .click({ force: true })
-    await page
-      .getByRole("button", { name: "Can the public participate in" })
-      .click({ force: true })
+
+    const dataAccessButton = page.getByRole("button", {
+      name: "Does NASA provide public access to space data?",
+    })
+    const educationalMaterialsButton = page.getByRole("button", {
+      name: "Are NASA's educational materials available for all age groups?",
+    })
+    const publicParticipationButton = page.getByRole("button", {
+      name: "Can the public participate in NASA missions?",
+    })
+
+    await expect(dataAccessButton).toBeVisible()
+
+    await dataAccessButton.click()
+    await expect(dataAccessButton).toHaveAttribute("aria-expanded", "true")
+    await educationalMaterialsButton.click()
+    await expect(educationalMaterialsButton).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    )
+    await publicParticipationButton.click()
+    await expect(publicParticipationButton).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    )
+
     await expect(
       page
         .getByText("Absolutely. NASA offers open"),
